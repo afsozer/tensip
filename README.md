@@ -10,13 +10,13 @@ Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızd
 
 ## Ne yapar
 
-- **Dosya listesi:** Vekili olduğunuz hukuk, ceza ve icra dosyalarını mahkeme, yıl ve sıra girmeden listeler. Türkçe karakterleri doğru eşleyen yerel arama, durum filtresi ve sıralama sunar.
-- **Arşiv ve eşitleme:** Seçtiğiniz dosyanın evraklarını yerel bir klasöre indirir. Sonraki eşitlemelerde yalnızca yeni ya da değişmiş evrakları getirir. Ek evraklar ana evrakın altında gruplanır, yeni ve güncellenen evraklar işaretlenir.
-- **Önizleme:** UDF ve metin katmanlı PDF belgelerini yerelde metne çevirir. Böylece evrakı açmadan okuyabilir, arşivde arama yapabilirsiniz.
+- **Dosya listesi:** Vekili olduğunuz hukuk, ceza ve icra dosyalarını mahkeme, yıl ve sıra girmeden listeler.
+- **Arşiv ve eşitleme:** Seçtiğiniz dosyanın evraklarını yerel bir klasöre indirir, sonraki eşitlemelerde yalnızca yeni ya da değişmiş evrakları getirir.
+- **Önizleme:** UDF ve metin katmanlı PDF evrakları uygulamanın içinde metin olarak gösterir.
 - **Dosya ayrıntısı:** Safahat, taraflar ve hesap bilgisini dosya ekranında gösterir.
-- **Ajanda:** Yaklaşan duruşma ve keşifleri güne göre gruplar ve istediğinizi `.ics` olarak macOS Takvim'e aktarır.
-- **Denetim ve onarım:** Arşivdeki eksik, bozuk ya da mükerrer kayıtları bulur ve hangi kaydın neden sorunlu olduğunu açıklar. Yalnızca güvenle düzeltebileceği kayıtları onarır.
-- **Üç arayüz:** Bir macOS uygulama penceresi, tarayıcıdan açılan yerel bir pano (`http://127.0.0.1:4747`) ve betiklerde kullanılabilen, JSON çıktı veren bir komut satırı (`tensip`).
+- **Ajanda:** Yaklaşan duruşma ve keşifleri listeler ve macOS Takvim'e aktarır.
+- **Denetim ve onarım:** Arşivdeki eksik, bozuk ya da mükerrer kayıtları bulur ve güvenle düzeltilebilenleri onarır.
+- **Üç arayüz:** macOS uygulama penceresi, tarayıcıdan açılan yerel pano (`http://127.0.0.1:4747`) ve JSON çıktı veren komut satırı (`tensip`).
 
 <table>
   <tr>
@@ -31,15 +31,15 @@ Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızd
   </tr>
 </table>
 
-Ekran görüntülerindeki mahkeme dosyaları, taraflar ve evraklar uydurmadır; görüntüler gerçek portala bağlanmayan tanıtım ortamında alınmıştır (bkz. [Geliştirme](#geliştirme)).
+Ekran görüntülerindeki dosyalar ve taraflar uydurmadır.
 
 ## Ne yapmaz
 
-Tensip UYAP'a evrak, dilekçe ya da başka bir içerik göndermez ve sizin adınıza imza atmaz. Portalda yalnızca okuma yapar: sorgular ve belge indirir. Arşiviniz, oturum bilgileriniz ve ayarlarınız bilgisayarınızda kalır; uygulama UYAP dışında hiçbir sunucuya bağlanmaz ve kullanım verisi toplamaz.
+Tensip UYAP'a evrak ya da dilekçe göndermez ve imza atmaz; portalda yalnızca sorgu yapar ve belge indirir. Arşiviniz ve oturum bilgileriniz bilgisayarınızda kalır, uygulama UYAP dışında hiçbir sunucuya bağlanmaz.
 
 ## Portal yükü ve sorumluluk
 
-UYAP Avukat Portalı kullanıcı sözleşmesi, program kullanarak sisteme olumsuz etki yapmayı ya da olağan dışı yük bindirmeyi yasaklıyor. Bu kurala aykırı davrandığı değerlendirilen hesaplara portal erişim engeli uygulanabiliyor. Tensip bu nedenle portala aynı anda yalnızca tek bir istek gönderir ve portalın bildirdiği sınırlara uyar (örneğin safahat sorgusunu dosya başına saatte bir kez yapar). Ayrıca aşağıdaki frenler her zaman açıktır:
+Avukat Portalı kullanıcı sözleşmesi, programla sisteme olağan dışı yük bindirmeyi yasaklıyor ve ihlal hâlinde portal erişimi engellenebiliyor. Tensip bu yüzden portala aynı anda tek istek gönderir, portalın kendi sınırlarına uyar ve şu frenleri uygular:
 
 | Fren | Varsayılan | Bayrak |
 |---|---|---|
@@ -47,26 +47,20 @@ UYAP Avukat Portalı kullanıcı sözleşmesi, program kullanarak sisteme olumsu
 | Günlük portal isteği | 500 (giriş doğrulaması ve oturum yenileme dâhil) | `--gunluk-istek-tavan N` |
 | Günlük dosya işi (eşitleme, klonlama) | 40 | `--gunluk-tavan N` |
 
-Bekleme her istekte yeniden çekildiği için istekler sabit bir ritimle gitmez. Günlük sayaçlar İstanbul saatine göre gece yarısı sıfırlanır ve motor yeniden başlatılsa da korunur. Tavan dolduğunda istek portala hiç gönderilmez, iş bir sonraki gün kaldığı yerden eşitlenebilir. 500 istek, yüzer evraklık dört dosyayı bir günde arşive almaya yeter; büyük bir arşivin ilk indirmesi birkaç güne yayılabilir.
+Günlük sayaçlar İstanbul saatiyle gece yarısı sıfırlanır; tavan dolunca istek gönderilmez ve eşitleme ertesi gün kaldığı yerden sürer.
 
-Daha temkinli çalışmak isterseniz motoru şöyle başlatabilirsiniz:
-
-```bash
-tensipd baslat --istek-aralik 6000 --gunluk-istek-tavan 200 --gunluk-tavan 10
-```
-
-Bu sınırlar portal hesabınızın güvende kalacağına dair bir garanti değildir. Uygulamayı kullanıp kullanmamaya ve nasıl kullanacağınıza siz karar verirsiniz; sorumluluk da size aittir. Yazılım lisansta belirtildiği gibi "olduğu gibi" sunulur.
+Bu sınırlar hesabınızın güvende kalacağını garanti etmez; kullanımın sorumluluğu size aittir.
 
 ## Gereksinimler
 
 | Gereksinim | Ne için |
 |---|---|
-| macOS | Masaüstü penceresi. Motor ve komut satırı Node.js'in çalıştığı başka sistemlerde de çalışabilir ama yalnızca macOS'ta denendi. |
+| macOS | Masaüstü penceresi (motor ve komut satırı da yalnızca macOS'ta denendi) |
 | Node.js 22 veya üstü | Motor, komut satırı, derleme ve testler |
-| Python 3 | Motorun tek kopya çalışmasını sağlayan kilit yardımcısı |
-| Chrome, Brave ya da Edge | Portal girişi. Giriş sizin tarayıcı pencerenizde, e-Devlet, e-imza ya da mobil imza ile yapılır. |
-| Xcode komut satırı araçları | Yalnızca `.app` paketini derlerken (`xcode-select --install`) |
-| `pdftotext` (isteğe bağlı) | PDF evraklardan metin çıkarmak için (`brew install poppler`) |
+| Python 3 | Motorun kilit yardımcısı |
+| Chrome, Brave ya da Edge | e-Devlet ile portal girişi |
+| Xcode komut satırı araçları | `.app` paketini derlemek (`xcode-select --install`) |
+| `pdftotext` (isteğe bağlı) | PDF evraklardan metin çıkarmak (`brew install poppler`) |
 
 ## Kurulum
 
@@ -76,21 +70,15 @@ cd tensip
 ./kur.sh
 ```
 
-`kur.sh` bağımlılıkları kurar, projeyi derler, testleri sahte bir portala karşı çalıştırır ve `tensip` ile `tensipd` komutlarını sisteme ekler. Testler gerçek UYAP'a hiç bağlanmaz.
-
-Masaüstü uygulamasını da kurmak isterseniz:
+`kur.sh` projeyi derler, testleri çalıştırır ve `tensip` ile `tensipd` komutlarını kurar. Masaüstü uygulaması için:
 
 ```bash
 ./uygulama/uygulama-kur.sh
 ```
 
-Bu betik `/Applications/Tensip.app` paketini oluşturur. Uygulamayı Launchpad'den ya da Spotlight'tan açtığınızda motor arka planda başlar ve pencere açılır.
-
 ## Kullanım
 
-Masaüstü uygulamasında giriş, sol alttaki düğmeyle başlar. Açılan tarayıcı penceresinde e-Devlet adımlarını siz tamamlarsınız; Tensip oturum açıldığı anı tarayıcının kendi trafiğinden anlar ve oturumu devralır. Sonra dosyalarınızı listeleyip arşive alabilirsiniz.
-
-Aynı işleri komut satırından da yapabilirsiniz:
+Girişi uygulama penceresinin sol altındaki düğmeyle başlatın; açılan tarayıcıda e-Devlet adımlarını tamamladığınızda Tensip oturumu devralır. Komut satırından:
 
 ```bash
 tensipd baslat                      # motoru ve yerel panoyu başlatır
@@ -103,34 +91,30 @@ tensip --help                       # bütün komutlar ve kullanım satırları
 tensipd durdur
 ```
 
-Komutlar sonuçlarını standart çıktıya JSON olarak yazar; ilerleme ve günlük kayıtları standart hataya gider. Bu sayede çıktıyı `jq` gibi araçlarla işleyebilirsiniz.
-
 ## Veriler nerede durur
 
 | Konum | İçerik |
 |---|---|
-| `~/Documents/Tensip/` | Dava arşivi: her dosya için bir klasör, evrakın aslı, çıkarılmış metni ve kayıt dosyası |
-| `~/.config/tensip/` | Ayarlar, oturum, iş geçmişi ve günlük kayıtları |
-
-Arşiv konumunu `tensipd baslat --kok <dizin>` ile değiştirebilirsiniz.
+| `~/Documents/Tensip/` | Dava arşivi (konumu `tensipd baslat --kok <dizin>` ile değişir) |
+| `~/.config/tensip/` | Ayarlar, oturum ve iş geçmişi |
 
 ## Geliştirme
 
 ```bash
 npm ci
-npm test        # derler ve bütün testleri sahte portala karşı çalıştırır
+npm test        # sahte portala karşı derler ve test eder
 ```
 
-Uygulamayı gerçek UYAP'a bağlanmadan denemek için tanıtım ortamını kullanabilirsiniz. Bu ortam sahte bir portala uydurma dosyalardan oluşan bir büro yükler ve yerel panoyu açar; README'deki ekran görüntüleri de burada alındı:
+Gerçek UYAP'a bağlanmadan denemek için uydurma dosyalarla dolu bir tanıtım ortamı var:
 
 ```bash
-npm run build && node bin/demo.mjs 4848    # sonra Tensip penceresinde ya da tarayıcıda http://127.0.0.1:4848
+npm run build && node bin/demo.mjs 4848    # http://127.0.0.1:4848
 ```
 
-Kaynak TypeScript ile yazıldı ve çalışma zamanında npm bağımlılığı yoktur. `src/` motoru, portal istemcisini, arşiv deposunu ve komut satırını; `web/` yerel panoyu; `uygulama/` macOS penceresini ve kurulum betiklerini içerir. Testler `test/` altındaki sahte UYAP sunucusunu kullanır.
+`src/` motoru, portal istemcisini ve komut satırını, `web/` yerel panoyu, `uygulama/` macOS penceresini içerir.
 
 ## Lisans
 
-Tensip [GNU Affero Genel Kamu Lisansı 3.0](LICENSE) (AGPL-3.0-or-later) ile lisanslanmıştır. Kodu kullanabilir, değiştirebilir ve dağıtabilirsiniz. Ancak değiştirdiğiniz bir sürümü dağıtıyor ya da ağ üzerinden hizmet olarak sunuyorsanız, kaynak kodunu da aynı lisansla paylaşmanız gerekir.
+Tensip [AGPL-3.0-or-later](LICENSE) ile lisanslanmıştır; değiştirilmiş bir sürümü dağıtan ya da ağ üzerinden sunan, kaynak kodunu aynı lisansla paylaşmak zorundadır.
 
 Telif hakkı © 2026 Av. Alpaslan Fatih Sözer
