@@ -2,9 +2,9 @@
 
 # Tensip
 
-Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızda düzenli bir arşive indiren, bu arşivi portalla eşitleyen ve evrakları masaüstünde okunur hâlde gösteren açık kaynaklı bir yardımcı uygulamadır. Bir avukat tarafından kendi bürosunda kullanmak için yazıldı ve macOS üzerinde günlük işte kullanılıyor.
+Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızda düzenli bir arşive indiren, bu arşivi portalla eşitleyen ve evrakları masaüstünde okunur hâlde gösteren açık kaynaklı bir yardımcı uygulamadır.
 
-> **Tensip resmî bir uygulama değildir.** Adalet Bakanlığı, UYAP ya da herhangi bir baro ile bağlantısı yoktur; onlar tarafından geliştirilmemiş, onaylanmamış ve desteklenmemektedir. "UYAP" adı yalnızca uygulamanın birlikte çalıştığı sistemi tarif etmek için geçer.
+> **Tensip resmî bir uygulama değildir.** Adalet Bakanlığı, UYAP ya da herhangi bir baro ile bağlantısı yoktur; onlar tarafından geliştirilmemiş, onaylanmamış ve desteklenmemektedir.
 
 ![Tensip — İndirilenler ekranı: arşivdeki dosyalar, seçili dosyanın evrakları ve evrak metninin önizlemesi](.github/ekran/indirilenler.png)
 
