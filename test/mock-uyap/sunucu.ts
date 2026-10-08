@@ -76,6 +76,8 @@ export interface MockKurulum {
   davalar: MockDava[];
   /** geçerli çerez değeri (JSESSIONID=...); boşsa kimlik denetimi yalnız varlık */
   gecerliCerezRegex?: RegExp;
+  /** Duruşma ucu satırları (ham portal biçimi); verilmezse sabit iki satır döner. */
+  durusmalar?: Record<string, unknown>[];
 }
 
 const RC_OK = "SUCCESS";
@@ -307,6 +309,10 @@ export class MockUyap {
       return;
     }
     if (yol === "/avukat_durusma_sorgula_brd.ajx") {
+      if (this.k.durusmalar !== undefined) {
+        json(this.k.durusmalar);
+        return;
+      }
       // Doğrulanmış sözleşme (5 Eyl): {baslangicTarihi,bitisTarihi} → DÜZ
       // DİZİ (sarmalayıcı yok). Satırlar bilinçli karışık sırada — parser
       // kronolojik sıralamalı. Veriler SENTETİK (gerçek müvekkil verisi yok).

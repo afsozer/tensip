@@ -6,6 +6,8 @@ Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızd
 
 > **Tensip resmî bir uygulama değildir.** Adalet Bakanlığı, UYAP ya da herhangi bir baro ile bağlantısı yoktur; onlar tarafından geliştirilmemiş, onaylanmamış ve desteklenmemektedir. "UYAP" adı yalnızca uygulamanın birlikte çalıştığı sistemi tarif etmek için geçer.
 
+![Tensip — İndirilenler ekranı: arşivdeki dosyalar, seçili dosyanın evrakları ve evrak metninin önizlemesi](.github/ekran/indirilenler.png)
+
 ## Ne yapar
 
 - **Dosya listesi:** Vekili olduğunuz hukuk, ceza ve icra dosyalarını mahkeme, yıl ve sıra girmeden listeler. Türkçe karakterleri doğru eşleyen yerel arama, durum filtresi ve sıralama sunar.
@@ -15,6 +17,21 @@ Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızd
 - **Ajanda:** Yaklaşan duruşma ve keşifleri güne göre gruplar ve istediğinizi `.ics` olarak macOS Takvim'e aktarır.
 - **Denetim ve onarım:** Arşivdeki eksik, bozuk ya da mükerrer kayıtları bulur ve hangi kaydın neden sorunlu olduğunu açıklar. Yalnızca güvenle düzeltebileceği kayıtları onarır.
 - **Üç arayüz:** Bir macOS uygulama penceresi, tarayıcıdan açılan yerel bir pano (`http://127.0.0.1:4747`) ve betiklerde kullanılabilen, JSON çıktı veren bir komut satırı (`tensip`).
+
+<table>
+  <tr>
+    <td width="33%"><a href=".github/ekran/dosyalar.png"><img src=".github/ekran/dosyalar.png" alt="Dosyalar ekranı: UYAP'taki dosyaların listesi"></a></td>
+    <td width="33%"><a href=".github/ekran/ajanda.png"><img src=".github/ekran/ajanda.png" alt="Ajanda ekranı: güne göre gruplanmış yaklaşan duruşmalar"></a></td>
+    <td width="33%"><a href=".github/ekran/safahat.png"><img src=".github/ekran/safahat.png" alt="Dosya ayrıntısı: safahat kayıtları"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Dosya listesi</sub></td>
+    <td align="center"><sub>Ajanda</sub></td>
+    <td align="center"><sub>Safahat</sub></td>
+  </tr>
+</table>
+
+Ekran görüntülerindeki mahkeme dosyaları, taraflar ve evraklar uydurmadır; görüntüler gerçek portala bağlanmayan tanıtım ortamında alınmıştır (bkz. [Geliştirme](#geliştirme)).
 
 ## Ne yapmaz
 
@@ -102,6 +119,12 @@ Arşiv konumunu `tensipd baslat --kok <dizin>` ile değiştirebilirsiniz.
 ```bash
 npm ci
 npm test        # derler ve bütün testleri sahte portala karşı çalıştırır
+```
+
+Uygulamayı gerçek UYAP'a bağlanmadan denemek için tanıtım ortamını kullanabilirsiniz. Bu ortam sahte bir portala uydurma dosyalardan oluşan bir büro yükler ve yerel panoyu açar; README'deki ekran görüntüleri de burada alındı:
+
+```bash
+npm run build && node bin/demo.mjs 4848    # sonra Tensip penceresinde ya da tarayıcıda http://127.0.0.1:4848
 ```
 
 Kaynak TypeScript ile yazıldı ve çalışma zamanında npm bağımlılığı yoktur. `src/` motoru, portal istemcisini, arşiv deposunu ve komut satırını; `web/` yerel panoyu; `uygulama/` macOS penceresini ve kurulum betiklerini içerir. Testler `test/` altındaki sahte UYAP sunucusunu kullanır.
