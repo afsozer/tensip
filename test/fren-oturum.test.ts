@@ -7,6 +7,7 @@ import { Hata } from "../src/core/errors.js";
 import { OturumDepo, OturumYoneticisi } from "../src/uyap/session.js";
 import { geciciKokler } from "./yardimci.js";
 import { join } from "node:path";
+import { writeFileSync } from "node:fs";
 
 const tmpKok = geciciKokler();
 
@@ -67,6 +68,121 @@ describe("fren", () => {
     f.cooldownBaslat();
     assert.throws(() => f.isBaslamadan(), (e: unknown) => (e as Hata).code === "OTOMASYON_BUTCESI");
     assert.ok(f.durum().cooldownKalanSn > 0);
+  });
+});
+
+describe("fren — portal yükü (8 Eki 2026)", () => {
+  // Saat ve bekleme sahte: istenen gecikmeler gerçek zaman beklemeden ölçülür.
+  function sahteSaat(rastgele: () => number = () => 0.5) {
+    let simdi = Date.parse("2026-10-08T09:00:00Z");
+    const beklemeler: number[] = [];
+    const f = (sec: ConstructorParameters<typeof Fren>[0] = {}) => new Fren({
+      simdi: () => simdi,
+      rastgele,
+      bekle: async (ms) => { beklemeler.push(ms); simdi += ms; },
+      ...sec,
+    });
+    return { f, beklemeler, ilerlet: (ms: number) => { simdi += ms; }, ayarla: (t: number) => { simdi = t; } };
+  }
+
+  test("varsayılan aralık 3–5 sn: ilk istek beklemez, sonrakiler 3000 + sapma bekler", async () => {
+    const degerler = [0, 0.999, 0.5];
+    let i = 0;
+    const s = sahteSaat(() => degerler[i++ % degerler.length]!);
+    const f = s.f();
+    for (let n = 0; n < 4; n++) await f.istek(async () => undefined);
+    assert.deepEqual(s.beklemeler, [3000, 4998, 4000], "ilk istek beklememeli, sonrakiler [3000, 5000) aralığında");
+    for (const b of s.beklemeler) assert.ok(b >= 3000 && b < 5000);
+    assert.equal(f.durum().istekAralikMs, 3000);
+    assert.equal(f.durum().istekSapmaMs, 2000);
+  });
+
+  test("sapma her istekte yeniden çekilir; sabit ritim oluşmaz", async () => {
+    const s = sahteSaat(Math.random);
+    const f = s.f();
+    for (let n = 0; n < 30; n++) await f.istek(async () => undefined);
+    assert.equal(s.beklemeler.length, 29);
+    assert.ok(new Set(s.beklemeler).size > 10, `beklemeler çeşitlenmeli: ${s.beklemeler.join(",")}`);
+    assert.ok(s.beklemeler.every((b) => b >= 3000 && b < 5000));
+  });
+
+  test("aralık değişince sapma onunla ölçeklenir; açık sapma verilirse o kullanılır", () => {
+    assert.equal(new Fren({ istekAralikMs: 6000 }).durum().istekSapmaMs, 4000);
+    assert.equal(new Fren({ istekAralikMs: 6000, istekSapmaMs: 500 }).durum().istekSapmaMs, 500);
+    assert.equal(new Fren({ istekAralikMs: 0 }).durum().istekSapmaMs, 0);
+  });
+
+  test("istek sürerken geçen zaman beklemeden düşülür (aralık bitişten sayılır)", async () => {
+    const s = sahteSaat(() => 0);
+    const f = s.f();
+    await f.istek(async () => undefined);
+    s.ilerlet(1200); // kullanıcı 1,2 sn sonra yeni bir şey istedi
+    await f.istek(async () => undefined);
+    assert.deepEqual(s.beklemeler, [1800]);
+  });
+
+  test("günlük portal isteği tavanı: dolunca istek portala HİÇ gitmez", async () => {
+    const s = sahteSaat();
+    const f = s.f({ gunlukIstekTavan: 3 });
+    let giden = 0;
+    for (let n = 0; n < 3; n++) await f.istek(async () => { giden++; });
+    await assert.rejects(
+      f.istek(async () => { giden++; }),
+      (e: unknown) => (e as Hata).code === "OTOMASYON_BUTCESI" && /3 portal isteği/.test((e as Error).message),
+    );
+    assert.equal(giden, 3);
+    assert.equal(f.durum().gunlukIstek, 3);
+    assert.equal(f.durum().gunlukIstekTavan, 3);
+    // Tavan reddi sırayı kilitlemez; reddedilen istek sayılmaz.
+    await assert.rejects(f.istek(async () => 1));
+    assert.equal(f.durum().gunlukIstek, 3);
+  });
+
+  test("varsayılan günlük istek tavanı 500", () => {
+    assert.equal(new Fren().durum().gunlukIstekTavan, 500);
+  });
+
+  test("hata veren istek de sayılır (portala gitti)", async () => {
+    const s = sahteSaat();
+    const f = s.f({ gunlukIstekTavan: 10 });
+    await assert.rejects(f.istek(async () => { throw new Error("koptu"); }));
+    assert.equal(f.durum().gunlukIstek, 1);
+  });
+
+  test("istek sayacı kalıcıdır, İstanbul gece yarısında sıfırlanır", async () => {
+    const { kok } = tmpKok();
+    const dosya = join(kok, "fren.json");
+    const s = sahteSaat();
+    s.ayarla(Date.parse("2026-10-08T20:59:00Z")); // İstanbul 23:59
+    const f = s.f({ dosya, gunlukIstekTavan: 2 });
+    f.yukle();
+    await f.istek(async () => undefined);
+    await f.istek(async () => undefined);
+    const ikinci = s.f({ dosya, gunlukIstekTavan: 2 });
+    ikinci.yukle();
+    assert.equal(ikinci.durum().gunlukIstek, 2, "yeni süreç sayacı devralmalı");
+    await assert.rejects(ikinci.istek(async () => undefined), (e: unknown) => (e as Hata).code === "OTOMASYON_BUTCESI");
+    s.ayarla(Date.parse("2026-10-08T21:00:01Z")); // İstanbul 00:00
+    await ikinci.istek(async () => undefined);
+    assert.equal(ikinci.durum().gunlukIstek, 1);
+    assert.equal(ikinci.durum().gun, "2026-10-09");
+  });
+
+  test("istek sayacı olmayan eski fren.json yüklenir ve 0'dan başlar", () => {
+    const { kok } = tmpKok();
+    const dosya = join(kok, "fren.json");
+    writeFileSync(dosya, JSON.stringify({ surum: 1, gun: "2026-10-08", gunlukSayac: 3, cooldownBitis: 0 }));
+    const f = new Fren({ dosya, simdi: () => Date.parse("2026-10-08T09:00:00Z") });
+    f.yukle();
+    assert.equal(f.durum().gunlukSayac, 3);
+    assert.equal(f.durum().gunlukIstek, 0);
+  });
+
+  test("bozuk istek sayacı sıfırlanmaz, yükleme durur", () => {
+    const { kok } = tmpKok();
+    const dosya = join(kok, "fren.json");
+    writeFileSync(dosya, JSON.stringify({ surum: 1, gun: "2026-10-08", gunlukSayac: 0, gunlukIstek: -4, cooldownBitis: 0 }));
+    assert.throws(() => new Fren({ dosya }).yukle(), /fren\.json korunuyor/);
   });
 });
 

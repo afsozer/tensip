@@ -78,9 +78,9 @@ export function yarimYazimHedefi(ad: string): string | null {
  *   • 108 belgelik uçtan uca klon (sahte portal, `istekAralikMs: 1`):
  *     2441 ms → 3275 ms, yani +834 ms (%34). Fark iki fsync/belgedir
  *     (kaynak + `.md` türevi); manifest zaten fsync'liydi.
- * KABUL GEREKÇESİ: gerçek portalda istek arası 800 ms'dir (`src/core/fren.ts`),
- * yani 108 belgelik gerçek bir klon en az 86 sn sürer ve +0,83 sn onun
- * %1'idir. Kullanıcının göremeyeceği bu bedel karşılığında, elektrik kesilse
+ * KABUL GEREKÇESİ: gerçek portalda istek arası 3–5 sn'dir (`src/core/fren.ts`),
+ * yani 108 belgelik gerçek bir klon en az 5,4 dk sürer ve +0,83 sn onun
+ * binde üçüdür. Kullanıcının göremeyeceği bu bedel karşılığında, elektrik kesilse
  * bile manifestin bildirdiği belge diskte GERÇEKTEN durur. Türevi fsync'ten
  * muaf tutmak bedeli yarıya indirirdi ve BİLEREK YAPILMADI: iki ayrı
  * dayanıklılık sınıfı, bu paketin kapattığı kusurun ta kendisiydi.

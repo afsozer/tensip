@@ -27,7 +27,7 @@ async function main(): Promise<number> {
     cik({
       komutlar: ["baslat", "durdur", "durum", "tani"],
       kullanım: {
-        baslat: "tensipd baslat [--kok DIZIN] [--portal URL] [--ayar DIZIN] [--web PORT|false] [--istek-aralik MS] [--gunluk-tavan N]",
+        baslat: "tensipd baslat [--kok DIZIN] [--portal URL] [--ayar DIZIN] [--web PORT|false] [--istek-aralik MS] [--istek-sapma MS] [--gunluk-tavan N] [--gunluk-istek-tavan N]",
         durdur: "tensipd durdur [--ayar DIZIN]",
         durum: "tensipd durum [--ayar DIZIN] — çalışan motorun yerel durumu; portala istek atmaz",
         tani: "tensipd tani [--ayar DIZIN] — sürüm, çalışan kaynak, bağımlılık ve arşiv tanılaması; motor kapalıyken de çalışır",
@@ -124,8 +124,22 @@ async function main(): Promise<number> {
   const portalUrl = typeof arg.bayrak["portal"] === "string" ? (arg.bayrak["portal"] as string) : PORTAL_BASE;
   const kokArg = typeof arg.bayrak["kok"] === "string" ? (arg.bayrak["kok"] as string) : undefined;
   const kokYolu = kokArg ?? varsayilanArsiv();
-  const istekAralik = typeof arg.bayrak["istek-aralik"] === "string" ? Number(arg.bayrak["istek-aralik"]) : undefined;
-  const gunlukTavan = typeof arg.bayrak["gunluk-tavan"] === "string" ? Number(arg.bayrak["gunluk-tavan"]) : undefined;
+  // Fren bayrakları tam sayı olmalı: `Number("abc")` NaN olur ve NaN aralık
+  // hiç bekletmez — yazım hatası freni sessizce kapatmamalı.
+  const sayiBayragi = (ad: string, enAz: number): number | undefined | null => {
+    const v = arg.bayrak[ad];
+    if (v === undefined) return undefined;
+    if (typeof v === "string" && /^\d+$/.test(v.trim()) && Number(v) >= enAz) return Number(v);
+    logYaz({ hata: { code: "INVALID_INPUT", message: `--${ad} değeri anlaşılmadı: ${String(v)}. En az ${enAz} olan bir tam sayı verin.` } });
+    return null;
+  };
+  const istekAralik = sayiBayragi("istek-aralik", 0);
+  const istekSapma = sayiBayragi("istek-sapma", 0);
+  const gunlukTavan = sayiBayragi("gunluk-tavan", 1);
+  const gunlukIstekTavan = sayiBayragi("gunluk-istek-tavan", 1);
+  if (istekAralik === null || istekSapma === null || gunlukTavan === null || gunlukIstekTavan === null) {
+    return cikisKodu("INVALID_INPUT");
+  }
 
   let kapaniyor = false;
   let kapandi = false;
@@ -141,7 +155,9 @@ async function main(): Promise<number> {
     portalUrl,
     appVersion: SUFFIX_APPVERSION,
     istekAralikMs: istekAralik,
+    istekSapmaMs: istekSapma,
     gunlukTavan,
+    gunlukIstekTavan,
     log: appLog,
     kapatildiginda: kapanmaBildir,
   });

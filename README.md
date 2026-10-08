@@ -22,12 +22,20 @@ Tensip UYAP'a evrak, dilekçe ya da başka bir içerik göndermez ve sizin adın
 
 ## Portal yükü ve sorumluluk
 
-UYAP Avukat Portalı kullanıcı sözleşmesi, program kullanarak sisteme olumsuz etki yapmayı ya da olağan dışı yük bindirmeyi yasaklıyor. Bu kurala aykırı davrandığı değerlendirilen hesaplara portal erişim engeli uygulanabiliyor. Tensip bu nedenle portala aynı anda tek bir istek gönderir, iki istek arasında bekler, günlük iş sayısını sınırlar ve portalın bildirdiği sınırlara uyar (örneğin safahat sorgusunu dosya başına saatte bir kez yapar).
+UYAP Avukat Portalı kullanıcı sözleşmesi, program kullanarak sisteme olumsuz etki yapmayı ya da olağan dışı yük bindirmeyi yasaklıyor. Bu kurala aykırı davrandığı değerlendirilen hesaplara portal erişim engeli uygulanabiliyor. Tensip bu nedenle portala aynı anda yalnızca tek bir istek gönderir ve portalın bildirdiği sınırlara uyar (örneğin safahat sorgusunu dosya başına saatte bir kez yapar). Ayrıca aşağıdaki frenler her zaman açıktır:
 
-Varsayılan değerler bir istekle sonraki arasında 800 ms ve günde 40 iştir. Daha temkinli çalışmak isterseniz motoru şöyle başlatabilirsiniz:
+| Fren | Varsayılan | Bayrak |
+|---|---|---|
+| İki istek arasındaki bekleme | 3 sn ile 5 sn arasında, her istekte rastgele seçilir | `--istek-aralik MS` (alt sınır), `--istek-sapma MS` |
+| Günlük portal isteği | 500 (giriş doğrulaması ve oturum yenileme dâhil) | `--gunluk-istek-tavan N` |
+| Günlük dosya işi (eşitleme, klonlama) | 40 | `--gunluk-tavan N` |
+
+Bekleme her istekte yeniden çekildiği için istekler sabit bir ritimle gitmez. Günlük sayaçlar İstanbul saatine göre gece yarısı sıfırlanır ve motor yeniden başlatılsa da korunur. Tavan dolduğunda istek portala hiç gönderilmez, iş bir sonraki gün kaldığı yerden eşitlenebilir. 500 istek, yüzer evraklık dört dosyayı bir günde arşive almaya yeter; büyük bir arşivin ilk indirmesi birkaç güne yayılabilir.
+
+Daha temkinli çalışmak isterseniz motoru şöyle başlatabilirsiniz:
 
 ```bash
-tensipd baslat --istek-aralik 4000 --gunluk-tavan 10
+tensipd baslat --istek-aralik 6000 --gunluk-istek-tavan 200 --gunluk-tavan 10
 ```
 
 Bu sınırlar portal hesabınızın güvende kalacağına dair bir garanti değildir. Uygulamayı kullanıp kullanmamaya ve nasıl kullanacağınıza siz karar verirsiniz; sorumluluk da size aittir. Yazılım lisansta belirtildiği gibi "olduğu gibi" sunulur.

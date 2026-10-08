@@ -434,6 +434,27 @@ test("P10a --web anlaşılmayan değerde çıkış 2 verir; false/0 hâlâ kapat
   }
 });
 
+test("fren bayrakları tam sayı olmalı: NaN aralık freni sessizce kapatamaz", async () => {
+  // `Number("abc")` NaN olur; NaN aralık hiç bekletmediği için yazım hatası
+  // portala frensiz istek akışı demekti.
+  for (const bayrak of ["--istek-aralik=abc", "--istek-sapma=-5", "--gunluk-tavan=0", "--gunluk-istek-tavan=1e3"]) {
+    const ayar4 = tmpKok();
+    const kok4 = tmpKok();
+    try {
+      const r = await calistir([
+        "tensipd", "baslat", `--ayar=${ayar4.kok}`, "--portal=http://127.0.0.1:1", "--web=false", `--kok=${kok4.kok}`, bayrak,
+      ], 20_000);
+      assert.equal(r.kod, 2, `${bayrak}: stderr=${r.stderr}`);
+      const h = JSON.parse(r.stderr.split("\n").find((l) => l.startsWith("{") && l.includes("hata"))!);
+      assert.equal(h.hata.code, "INVALID_INPUT");
+      assert.equal(existsSync(join(ayar4.kok, "control.json")), false, `${bayrak}: motor başlamamalı`);
+    } finally {
+      ayar4.temizle();
+      kok4.temizle();
+    }
+  }
+});
+
 describe("çift başlatma", () => {
   const ayar = tmpKok();
   const kok = tmpKok();

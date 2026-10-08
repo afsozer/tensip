@@ -3,7 +3,8 @@ import { escape as esc } from "./ortak.js";
 const names = { calisiyor: 'Çalışıyor', duraklatildi: 'Duraklatıldı', kesildi: 'Kesildi', hazir: 'Tamamlandı', iptal: 'İptal edildi', hata: 'Hata', eksikli: 'Eksik evrak', bekliyor: 'Bekliyor' };
 export function frenMetni(fren) {
   if (!fren) return '';
-  return `<p class="subtle">Bugün ${Number(fren.gunlukSayac)} / ${Number(fren.gunlukTavan)} dosya işi başlatıldı · İstanbul saati.${fren.cooldownKalanSn > 0 ? ` Yeni iş için ${Number(fren.cooldownKalanSn)} sn bekleme var.` : ''}<br>Her eşitleme veya devam denemesi bir iş sayılır; evrak ve portal isteği sayısı değildir. Bu, uygulamanın koruyucu sınırıdır; UYAP'ın resmî kotası değildir.</p>`;
+  const istek = Number.isFinite(fren.gunlukIstekTavan) ? ` · ${Number(fren.gunlukIstek)} / ${Number(fren.gunlukIstekTavan)} portal isteği` : '';
+  return `<p class="subtle">Bugün ${Number(fren.gunlukSayac)} / ${Number(fren.gunlukTavan)} dosya işi başlatıldı${istek} · İstanbul saati.${fren.cooldownKalanSn > 0 ? ` Yeni iş için ${Number(fren.cooldownKalanSn)} sn bekleme var.` : ''}<br>Her eşitleme veya devam denemesi bir iş sayılır; evrak ve portal isteği sayısı değildir. Bu, uygulamanın koruyucu sınırıdır; UYAP'ın resmî kotası değildir.</p>`;
 }
 export function evrakSonucu(sonuc) {
   if (!sonuc || !Number.isFinite(sonuc.yeniEvrak)) return '';

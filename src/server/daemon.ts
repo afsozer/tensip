@@ -47,9 +47,11 @@ export interface DaemonSecenek {
   /** portal kökü; testlerde mock */
   portalUrl?: string;
   appVersion?: string;
-  /** fren ayarları (testlerde gevşetilir) */
+  /** fren ayarları (testlerde gevşetilir); varsayılanlar src/core/fren.ts */
   istekAralikMs?: number;
+  istekSapmaMs?: number;
   gunlukTavan?: number;
+  gunlukIstekTavan?: number;
   /** web panosu portu; 0 = kapalı (varsayılan 4747) */
   webPort?: number;
   /** Oturum canlı-tutma aralığı (ms; varsayılan 10 dk, 0 = kapalı).
@@ -99,7 +101,9 @@ export function daemonKur(sec: DaemonSecenek = {}): Daemon {
   const log = sec.log ?? new AppLog({ dosya: join(ayarDir, "tensip.log") });
   const fren = new Fren({
     istekAralikMs: sec.istekAralikMs,
+    istekSapmaMs: sec.istekSapmaMs,
     gunlukTavan: sec.gunlukTavan,
+    gunlukIstekTavan: sec.gunlukIstekTavan,
     dosya: join(ayarDir, "fren.json"),
   });
   const oturumDepo = new OturumDepo(ayarDir);
