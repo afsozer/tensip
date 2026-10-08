@@ -1,0 +1,1049 @@
+:root {
+  color-scheme: dark;
+  --bg: #151313;
+  --panel: #1d1a1a;
+  --panel2: #242020;
+  --line: #393030;
+  --text: #f2ece7;
+  --muted: #afa29c;
+  --accent: #ec8d77;
+  --accent-dark: #3d2722;
+  --green: #9dbda3;
+  --red: #f19d95;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 85% 0, rgba(105, 57, 36, 0.13), transparent 48%),
+    var(--bg);
+  color: var(--text);
+  font:
+    14px/1.5 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--panel2);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 13px;
+  transition: background 0.15s;
+}
+button:hover {
+  background: #342b29;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #171515;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+input::placeholder {
+  color: #877c77;
+}
+label {
+  display: block;
+  color: #d6cbc5;
+  font-size: 13px;
+}
+label input,
+label select {
+  margin-top: 6px;
+}
+a {
+  color: var(--accent);
+}
+[hidden] {
+  display: none !important;
+}
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 205px;
+  flex-shrink: 0;
+  position: fixed;
+  inset: 0 auto 0 0;
+  padding: 29px 15px 18px;
+  border-right: 1px solid #342b29;
+  background: linear-gradient(160deg, #211919, #181515 50%);
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 6px 45px;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 18px;
+}
+.brand strong {
+  font-weight: 500;
+}
+.brand small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+.brand-mark {
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: #301e18;
+  width: 33px;
+  height: 37px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  font:
+    25px Georgia,
+    serif;
+}
+.nav-caption {
+  font-size: 10px;
+  color: #897975;
+  letter-spacing: 1.6px;
+  margin: 0 12px 12px;
+}
+nav {
+  display: grid;
+  gap: 6px;
+}
+nav button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  font-size: 17px;
+  border-color: transparent;
+  background: none;
+  padding: 12px 10px;
+}
+nav button span {
+  font-size: 12px;
+}
+nav button.active {
+  background: #392724;
+  color: #f7a38f;
+  border-color: #50332b;
+}
+.badge {
+  margin-left: auto;
+  background: #704034;
+  padding: 0 5px;
+  border-radius: 5px;
+}
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 30px;
+}
+.session {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 13px 3px;
+}
+.session strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+.session small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.status-dot {
+  width: 7px;
+  height: 7px;
+  background: #b49873;
+  border-radius: 50%;
+  margin-top: 7px;
+  flex-shrink: 0;
+}
+.status-dot.online {
+  background: var(--green);
+}
+.full {
+  width: 100%;
+}
+.primary {
+  background: var(--accent);
+  color: #301d17;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.primary:hover {
+  background: #f5a18c;
+}
+.quiet {
+  background: transparent;
+  color: var(--muted);
+}
+.local-note {
+  display: block;
+  text-align: center;
+  font-size: 9px;
+  color: #887a74;
+  margin-top: 15px;
+}
+main {
+  margin-left: 205px;
+  min-width: 0;
+  width: calc(100% - 205px);
+  padding: 34px 30px;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 27px;
+}
+.eyebrow {
+  color: var(--accent);
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+h1 {
+  font:
+    34px/1.2 Georgia,
+    "Times New Roman",
+    serif;
+  margin: 8px 0;
+}
+h2 {
+  font-size: 17px;
+  margin: 0;
+}
+h3 {
+  font-size: 14px;
+  margin: 0;
+}
+p {
+  margin: 8px 0;
+  color: var(--muted);
+}
+.page-header p {
+  font-size: 12px;
+}
+.header-status {
+  color: var(--muted);
+  white-space: nowrap;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 7px 12px;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(195px, 0.9fr) minmax(225px, 1.05fr) minmax(
+      260px,
+      1.45fr
+    );
+  height: calc(100vh - 177px);
+  min-height: 470px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--panel);
+}
+.column {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.column + .column {
+  border-left: 1px solid var(--line);
+}
+.column-head {
+  padding: 18px 16px;
+  border-bottom: 1px solid var(--line);
+  min-height: 69px;
+}
+.column-head h2 {
+  font-size: 14px;
+}
+.column-head .search {
+  margin-top: 12px;
+  font-size: 12px;
+}
+.subtle {
+  color: var(--muted);
+  font-size: 11px;
+}
+.portal-controls {
+  margin-bottom: 14px;
+}
+.portal-controls label {
+  min-width: 150px;
+  flex: 1;
+}
+.portal-controls button {
+  align-self: end;
+}
+.portal-pages {
+  margin-top: 12px;
+}
+.list {
+  overflow: auto;
+  flex: 1;
+  padding: 8px;
+}
+.list-item {
+  display: block;
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  padding: 12px 10px;
+  margin-bottom: 4px;
+  border-radius: 9px;
+  overflow-wrap: anywhere;
+}
+.list-item.active {
+  border-color: #6c4337;
+  background: #362621;
+}
+.list-item strong {
+  font-size: 12px;
+  display: block;
+  line-height: 1.5;
+  font-weight: 500;
+}
+.list-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 5px;
+}
+.list-item .tag {
+  display: inline-block;
+  margin-top: 8px;
+}
+.tag {
+  font-size: 10px;
+  color: var(--muted);
+  background: #302a27;
+  border: 1px solid #473b35;
+  border-radius: 5px;
+  padding: 2px 6px;
+}
+.tag.good {
+  color: #b2cbb5;
+  border-color: #3c5041;
+  background: #263128;
+}
+.tag.bad {
+  color: #f2aea4;
+  border-color: #68413b;
+  background: #382523;
+}
+.tag.warm {
+  color: #e7c294;
+}
+/* P15a hazırlık taksonomisi. Sağlam belge (gorsel) ile gerçekten desteklenmeyen
+   biçim aynı görünmemeli; araç eksikliği ise eyleme dönüktür (amber). */
+.tag.gorsel {
+  color: #a9c5d6;
+  border-color: #3a4c58;
+  background: #212c33;
+}
+.tag.desteklenmiyor {
+  color: #cfc0b8;
+  border-color: #4d4039;
+  background: #2b2421;
+}
+.tag.arac-yok {
+  color: #e7c294;
+  border-color: #5d4a30;
+  background: #322820;
+}
+.tag.bilinmiyor {
+  color: var(--muted);
+  border-style: dashed;
+}
+/* Ek evrak grubu: katlanmaz, yalnız girinti + üye özeti (K08 gösterim payı). */
+.doc-group {
+  border-left: 2px solid var(--line);
+  padding-left: 8px;
+  margin: 2px 0 6px;
+}
+.doc-group-head {
+  margin: 2px 0 2px 4px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.doc-group-members {
+  padding-left: 10px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spread {
+  justify-content: space-between;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.column-footer {
+  padding: 12px;
+  border-top: 1px solid var(--line);
+}
+.column-footer button {
+  font-size: 11px;
+  padding: 7px 9px;
+}
+.preview-head {
+  padding: 17px 18px;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+.preview-head h2 {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+.preview-body {
+  overflow: auto;
+  padding: 22px;
+  flex: 1;
+}
+.preview-body pre {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font:
+    13px/1.85 -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  color: #e1d7d0;
+}
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 18px;
+  color: var(--muted);
+  min-height: 180px;
+  flex: 1;
+}
+.empty-symbol {
+  font:
+    33px Georgia,
+    serif;
+  color: #876758;
+  margin-bottom: 12px;
+}
+.empty strong {
+  font-size: 13px;
+  color: #d9cdc5;
+  font-weight: 500;
+}
+.empty p {
+  font-size: 12px;
+  max-width: 330px;
+}
+.notice {
+  border: 1px solid #5e4933;
+  background: #30271e;
+  color: #e8c69e;
+  padding: 12px 15px;
+  border-radius: 9px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+.notice.error {
+  border-color: #66423c;
+  background: #352522;
+  color: #f1b5aa;
+}
+.panel {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  border-radius: 13px;
+  padding: 22px;
+  margin-bottom: 18px;
+}
+.panel-title {
+  margin-bottom: 18px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: minmax(230px, 2fr) 1fr 1fr auto;
+  align-items: end;
+  gap: 12px;
+}
+.table-wrap {
+  overflow: auto;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+}
+td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #302927;
+  overflow-wrap: anywhere;
+}
+td:last-child {
+  white-space: nowrap;
+}
+tr:last-child td {
+  border-bottom: none;
+}
+.actions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+.actions button {
+  font-size: 11px;
+  padding: 7px 10px;
+}
+.job {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+.job:last-child {
+  border-bottom: 0;
+}
+.job-title {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+.progress-track {
+  height: 4px;
+  background: #39302b;
+  border-radius: 9px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+.progress-track span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.tabs button {
+  font-size: 11px;
+  padding: 6px 9px;
+}
+.tabs button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.details-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 14px;
+  font-size: 13px;
+}
+.details-grid dt {
+  color: var(--muted);
+}
+.details-grid dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.detail-record {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.detail-record dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(100px, 0.8fr) 1.2fr;
+  gap: 7px;
+  font-size: 11px;
+}
+.detail-record dt {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.detail-record dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+/* P07b — ayrıntı sekmeleri: sıra etiketi, iç içe alanlar, tanınmayanlar. */
+.detay-durum {
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.detay-durum p {
+  margin: 0;
+}
+.detay-sira-not {
+  margin: 0 0 10px;
+}
+.detail-record .detay-sira {
+  margin: 0 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.detail-record .detay-ic {
+  display: grid;
+  grid-template-columns: minmax(80px, 0.7fr) 1.3fr;
+  gap: 4px 7px;
+  margin: 0;
+  padding-left: 9px;
+  border-left: 2px solid var(--line);
+}
+.detail-record .detay-liste {
+  margin: 0;
+  padding-left: 15px;
+}
+.detail-record .detay-diger {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.detail-record .detay-diger-baslik {
+  margin: 0 0 6px;
+  font-size: 10px;
+  color: var(--muted);
+}
+#toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  max-width: 420px;
+  z-index: 10;
+  background: #42332d;
+  color: #fff1e7;
+  padding: 14px 20px;
+  border: 1px solid #765143;
+  border-radius: 11px;
+  box-shadow: 0 8px 30px #0007;
+  font-size: 13px;
+}
+.spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid #574239;
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (min-width: 1400px) {
+  main {
+    padding: 38px 40px;
+  }
+  .workspace {
+    height: calc(100vh - 187px);
+  }
+}
+@media (max-width: 1150px) {
+  main {
+    padding: 25px 18px;
+  }
+  .sidebar {
+    width: 190px;
+  }
+  main {
+    margin-left: 190px;
+    width: calc(100% - 190px);
+  }
+  .workspace {
+    grid-template-columns: minmax(170px, 0.85fr) minmax(185px, 0.95fr) minmax(
+        220px,
+        1.2fr
+      );
+  }
+  .column-head {
+    padding: 14px 11px;
+  }
+  .preview-body {
+    padding: 16px;
+  }
+  .form-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+  .form-grid > button {
+    grid-column: 1/-1;
+  }
+  .page-header {
+    margin-bottom: 21px;
+  }
+  h1 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 800px) {
+  .app {
+    display: block;
+  }
+  .sidebar {
+    position: relative;
+    width: 100%;
+    padding: 16px;
+    gap: 12px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand {
+    margin: 0;
+  }
+  .brand small,
+  .nav-caption,
+  .local-note {
+    display: none;
+  }
+  nav {
+    display: flex;
+    overflow: auto;
+  }
+  nav button {
+    flex-shrink: 0;
+    font-size: 14px;
+    padding: 8px;
+  }
+  nav button span {
+    font-size: 11px;
+  }
+  .sidebar-bottom {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sidebar-bottom > button {
+    width: auto;
+    font-size: 11px;
+  }
+  .session {
+    padding: 0;
+    flex: 1;
+  }
+  .session small {
+    font-size: 10px;
+  }
+  main {
+    margin: 0;
+    width: 100%;
+    padding: 22px 14px;
+  }
+  .page-header {
+    align-items: flex-start;
+  }
+  .header-status {
+    display: none;
+  }
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+  .column {
+    min-height: 230px;
+    max-height: 340px;
+  }
+  .column + .column {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .column.preview-column {
+    max-height: none;
+    min-height: 320px;
+  }
+  .preview-body {
+    max-height: 650px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .form-grid > label:first-child {
+    grid-column: 1/-1;
+  }
+  .details-grid {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+  .details-grid dd {
+    margin-bottom: 14px;
+  }
+  .panel {
+    padding: 16px;
+  }
+  .page-header p {
+    max-width: 300px;
+  }
+  #toast {
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    max-width: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.archive-choice { display: flex; align-items: stretch; }
+.archive-check { display: flex; align-items: center; padding: 0 5px 0 12px; cursor: pointer; }
+.archive-check input { width: 17px; height: 17px; margin: 0; }
+.archive-choice .list-item { flex: 1; min-width: 0; }
+.batch-results { padding-left: 22px; }
+.batch-results li { padding: 8px 0; overflow-wrap: anywhere; }
+.batch-results li > .subtle { display: block; }
+/* P15b "yeni" rozeti. Hazırlık etiketlerinden AYRI bir eksende durmalı: onlar
+   belgenin niteliğini söyler, bu rozet son eşitlemede ne geldiğini söyler.
+   Bu yüzden tek vurgulu (accent) renk — satırda ilk yakalanan şey o olsun. */
+.tag.yeni {
+  color: #1d1a18;
+  border-color: var(--accent);
+  background: var(--accent);
+  font-weight: 600;
+}
+
+/* P15c kaynak rozetleri. Bunlar hazırlık etiketlerinden AYRI bir eksendir:
+   onlar türetilmiş METNİ anlatır, bunlar asıl DOSYAYI. "Eksik" kırmızıya
+   yakın durur (eyleme dönük: yeniden eşitle), "Erişilemedi" nötr-uyarı
+   tonundadır — orada bir şey olmadığını İDDİA ETMEZ. */
+.tag.eksik {
+  color: #f2aea4;
+  border-color: #68413b;
+  background: #382523;
+  font-weight: 600;
+}
+.tag.erisilemedi {
+  color: #e7c294;
+  border-color: #5d4a30;
+  background: #322820;
+  font-weight: 600;
+}
+/* Kaynağı erişilemeyen satır soluklaşır ama OKUNUR kalır: rozet ve metin hâlâ
+   seçilebilir, yalnız "asıl belgeyi aç" kapanır. Seçili satırda soluklaştırma
+   geri alınır, yoksa seçim görünmez olur. */
+.list-item.soluk {
+  opacity: 0.55;
+}
+.list-item.soluk.active,
+.list-item.soluk:hover,
+.list-item.soluk:focus-visible {
+  opacity: 1;
+}
+
+/* ── P16 sorun sekmesi ve kalıcı durum şeridi ─────────────────────────────── */
+
+/* Orta sütunun sekme şeridi. Genel `.tabs` kuralı önizleme sütunu için
+   tasarlandı (14px dikey boşluk); sütun başlığında o boşluk listeyi aşağı
+   itiyor, burada sıfırlanır. */
+.column-head .orta-tabs {
+  margin: 0 0 10px;
+}
+.column-head .sekme-not {
+  margin: 10px 0 0;
+  font-size: 11px;
+}
+.column-head #sorun-araclar .row {
+  gap: 8px;
+}
+.column-head #sorun-araclar button {
+  font-size: 11px;
+  padding: 6px 9px;
+}
+.column-head #sorun-araclar label {
+  font-size: 11px;
+  color: var(--muted);
+}
+/* Sorun kaydı liste sütununda duruyor; panel kartından dar bir alan. */
+.sorun-kayit {
+  padding: 13px 10px;
+}
+.sorun-kayit p {
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+.sorun-kayit .tag {
+  margin-left: 4px;
+}
+
+/* Durum şeridi. İş yokken `hidden` durur ve HİÇ yer kaplamaz: yükseklik,
+   kenarlık ve boşluk yalnız görünürken uygulanır (kabul ölçütü). */
+.arsiv-durum {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.arsiv-durum p {
+  margin: 6px 0 0;
+}
+.arsiv-durum-is + .arsiv-durum-is {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.arsiv-durum .progress-track {
+  margin: 8px 0 0;
+}
+/* Şerit görünürken çalışma alanı o kadar kısalır ki sayfa kaymasın. :has()
+   desteklenmeyen bir motorda tek sonuç küçük bir dikey kaydırmadır; şeridin
+   kendisi ve sekmeler etkilenmez. */
+#page:has(#arsiv-durum:not([hidden])) .workspace {
+  height: calc(100vh - 275px);
+}
+
+/* P18 — taraf gösterimi. Rol etiketi portaldan gelir; burada yalnız hizalama
+   ve taşma kuralı var, rol adına göre RENK YOKTUR (sabit rol tablosu yok). */
+.taraf-ozet {
+  overflow-wrap: anywhere;
+}
+.taraf-rol {
+  color: var(--muted);
+}
+.taraf-grup {
+  white-space: normal;
+}
+.taraf-ayrac {
+  color: var(--muted);
+}
+/* Portal listesinde sonuç satırı: kendi satırında, tabloyu genişletmeden. */
+.taraf-satiri td {
+  padding-top: 0;
+  color: var(--text);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.taraf-hata {
+  color: var(--red);
+}
+
+/* ── P06a denetim sekmesi ──────────────────────────────────────────────────
+   Bulgular EKSENE göre gruplanır (asıl belge / hazır metin / kayıt / klasör /
+   kayıtsız dosya): kaynak hatası ile "metin çıkarılamıyor" aynı kırmızıya
+   sıkıştırılmaz. Grup başlığı ayrımın kendisidir, renk değil. */
+.column-head #denetim-araclar .row {
+  gap: 8px;
+}
+.column-head #denetim-araclar button {
+  font-size: 11px;
+  padding: 6px 9px;
+}
+.denetim-grup {
+  padding-top: 8px;
+}
+.denetim-grup h3 {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 10px 0 2px;
+}
+.denetim-grup > p.subtle {
+  margin: 0 0 4px;
+}
+/* Onarım YOKTUR (P06b). Bu satır bir düğme değildir ve düğmeye benzemez. */
+.denetim-onarim-notu {
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+  margin-top: 14px;
+}
+/* P07a — ajanda: gün grupları, saat sütunu ve aktarma araçları. */
+.ajanda-grup {
+  padding-top: 8px;
+}
+.ajanda-grup h3 {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 10px 0 4px;
+}
+.ajanda-satir .row.spread {
+  align-items: flex-start;
+  gap: 12px;
+}
+.ajanda-saat {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 15px;
+  min-width: 52px;
+}
+.ajanda-govde {
+  flex: 1;
+  min-width: 200px;
+}
+.ajanda-govde p {
+  margin: 2px 0 0;
+}
+.ajanda-eylem {
+  gap: 6px;
+}
+.ajanda-belirsiz {
+  max-width: 260px;
+}
+.ajanda-araclar {
+  margin-top: 12px;
+  gap: 8px;
+}
+.ajanda-taraf {
+  gap: 6px;
+}

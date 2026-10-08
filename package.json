@@ -1,0 +1,43 @@
+{
+  "name": "tensip",
+  "version": "1.1.0",
+  "description": "UYAP Avukat Portalı'ndaki dava dosyalarını yerel arşive indiren, eşitleyen ve gösteren yardımcı uygulama (resmî değildir)",
+  "license": "AGPL-3.0-or-later",
+  "author": "Alpaslan Fatih Sözer",
+  "homepage": "https://github.com/afsozer/tensip#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afsozer/tensip.git"
+  },
+  "bugs": {
+    "url": "https://github.com/afsozer/tensip/issues"
+  },
+  "keywords": [
+    "uyap",
+    "avukat",
+    "hukuk",
+    "arşiv",
+    "udf",
+    "türkiye"
+  ],
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "tensipd": "bin/tensipd.mjs",
+    "tensip": "bin/tensip.mjs"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -p tsconfig.json --watch",
+    "test": "npm run build && node bin/test-kos.mjs",
+    "start": "node bin/tensipd.mjs baslat",
+    "lint": "tsc -p tsconfig.json --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "typescript": "^7.0.2"
+  }
+}

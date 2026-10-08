@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="__CSRF_TOKEN__" />
+    <title>Tensip</title>
+    <link rel="stylesheet" href="/app.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar">
+        <a class="brand" href="#indirilenler"
+          ><span class="brand-mark">U</span
+          ><span
+            >UYAP <strong>Asistan</strong
+            ><small>Hukuk çalışma alanı</small></span
+          ></a
+        >
+        <div class="nav-caption">ÇALIŞMA ALANI</div>
+        <nav aria-label="Ana menü">
+          <button data-page="dosyalar">▤ <span>Dosyalar</span></button
+          ><button data-page="indirilenler" class="active">
+            ▥ <span>İndirilenler</span
+            ><span id="issue-badge" class="badge" hidden></span></button
+          ><button data-page="islemler">
+            ↻ <span>İşlemler</span></button
+          ><button data-page="ajanda">▦ <span>Ajanda</span></button
+          ><button data-page="ayarlar">⚙ <span>Ayarlar</span></button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="session">
+            <span class="status-dot" id="session-dot"></span>
+            <div>
+              <strong id="session-label">Durum kontrol ediliyor</strong
+              ><small id="session-detail">Yerel arşiviniz erişilebilir</small>
+            </div>
+          </div>
+          <button class="primary full" id="login-button">
+            UYAP’a giriş yap</button
+          ><button class="quiet full" id="cancel-login" hidden>
+            Girişi iptal et</button
+          ><small class="local-note"
+            >Belgeleriniz bu bilgisayarda saklanır.</small
+          >
+        </div>
+      </aside>
+      <main>
+        <header class="page-header">
+          <div>
+            <div class="eyebrow">UYAP ASİSTAN</div>
+            <h1 id="page-title">İndirilenler</h1>
+            <p id="page-description">
+              Dosyalarınız, evraklarınız ve çalışma notlarınız tek yerde.
+            </p>
+          </div>
+          <div class="header-status" id="header-status">Yerel arşiv</div>
+        </header>
+        <div
+          id="connection-error"
+          class="notice error"
+          role="status"
+          hidden
+        ></div>
+        <div id="page"></div>
+      </main>
+    </div>
+    <div id="toast" role="status" aria-live="polite" hidden></div>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
