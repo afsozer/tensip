@@ -2,6 +2,8 @@
 
 # Tensip
 
+**Proje sayfası:** [avfatihsozer.com/projeler/tensip](https://avfatihsozer.com/projeler/tensip) · English: [README.en.md](README.en.md)
+
 Tensip, UYAP Avukat Portalı'ndaki dava dosyalarınızı kendi bilgisayarınızda düzenli bir arşive indiren, bu arşivi portalla eşitleyen ve evrakları masaüstünde okunur hâlde gösteren açık kaynaklı bir yardımcı uygulamadır.
 
 > **Tensip resmî bir uygulama değildir.** Adalet Bakanlığı, UYAP ya da herhangi bir baro ile bağlantısı yoktur; onlar tarafından geliştirilmemiş, onaylanmamış ve desteklenmemektedir.
