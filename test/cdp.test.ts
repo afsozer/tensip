@@ -12,7 +12,7 @@ import { join, basename } from "node:path";
 import { createServer as tcpSunucu, type Socket } from "node:net";
 import { createHash } from "node:crypto";
 import { MiniWs, CdpIstemci } from "../src/uyap/cdp.js";
-import { cdpGirisi } from "../src/uyap/login.js";
+import { cdpGirisi, tarayiciArgumanlari } from "../src/uyap/login.js";
 import { daemonKur } from "../src/server/daemon.js";
 import { MiniWsSunucu, tmpKok } from "./yardimci.js";
 
@@ -149,6 +149,19 @@ describe("CdpIstemci", () => {
     assert.equal(cerezler[0]?.name, "JSESSIONID");
     cdp.kapat();
     await cdpSunucu.durdur();
+  });
+});
+
+describe("tarayiciArgumanlari", () => {
+  test("varsayılan pencereli; görünmez kipte headless + masaüstü genişliği, URL hep sonda", () => {
+    const pencereli = tarayiciArgumanlari(9222, "/tmp/p", "https://avukat.uyap.gov.tr/", false);
+    assert.ok(!pencereli.some((a) => a.startsWith("--headless")));
+    assert.equal(pencereli.at(-1), "https://avukat.uyap.gov.tr/");
+    const gorunmez = tarayiciArgumanlari(9222, "/tmp/p", "https://avukat.uyap.gov.tr/", true);
+    assert.ok(gorunmez.includes("--headless=new"));
+    assert.ok(gorunmez.includes("--window-size=1366,900"));
+    assert.ok(gorunmez.includes("--remote-debugging-port=9222") && gorunmez.includes("--user-data-dir=/tmp/p"));
+    assert.equal(gorunmez.at(-1), "https://avukat.uyap.gov.tr/");
   });
 });
 

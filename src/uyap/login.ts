@@ -100,6 +100,24 @@ function bayatProfilleriTemizle(): void {
   }
 }
 
+/**
+ * Giriş tarayıcısının argümanları. `gorunmez` (TENSIP_HEADLESS=1) pencere
+ * açmadan çalışır: girişi insan değil otomatik giriş betiği yaptığı kurulum
+ * için (sozer-pc WSL; WSLg'nin msrdc'si oyun korumalarına takılıyordu).
+ * Dar pencere menüsüne düşmesin diye boyut masaüstü genişliğinde verilir.
+ */
+export function tarayiciArgumanlari(port: number, profil: string, url: string, gorunmez: boolean): string[] {
+  return [
+    `--remote-debugging-port=${port}`,
+    `--user-data-dir=${profil}`,
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-features=ChromeWhatsNew",
+    ...(gorunmez ? ["--headless=new", "--window-size=1366,900"] : []),
+    url,
+  ];
+}
+
 /** Profil silinmeden önce çocuğun gerçekten çıkmasını bekler. */
 async function tarayiciKapat(cocuk: ChildProcess | null): Promise<void> {
   if (!cocuk?.pid || cocuk.exitCode !== null || cocuk.signalCode !== null) return;
@@ -193,14 +211,9 @@ export async function cdpGirisi(sec: CdpGirisSecenek = {}): Promise<CdpGirisSonu
         throw new Hata(KODLAR.LOGIN_REQUIRED, "giriş iptal edildi");
       }
     } else {
-      cocuk = spawn(tarayici, [
-        `--remote-debugging-port=${port}`,
-        `--user-data-dir=${profil}`,
-        "--no-first-run",
-        "--no-default-browser-check",
-        "--disable-features=ChromeWhatsNew",
-        sec.girisUrl ?? PORTAL_KOK,
-      ], { stdio: ["ignore", "ignore", "pipe"] });
+      const gorunmez = process.env["TENSIP_HEADLESS"] === "1";
+      cocuk = spawn(tarayici, tarayiciArgumanlari(port, profil, sec.girisUrl ?? PORTAL_KOK, gorunmez),
+        { stdio: ["ignore", "ignore", "pipe"] });
       wsUrl = await devtoolsAdresi(cocuk);
     }
     if (iptalEdildi) throw new Hata(KODLAR.LOGIN_REQUIRED, "giriş iptal edildi");
