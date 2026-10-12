@@ -7,7 +7,7 @@
 
 import { mkdirSync, existsSync, readFileSync, statSync, readdirSync } from "node:fs";
 import { ayniKaynakTekillestir } from "../store/tekrar.js";
-import { evraklariEslestir, grupOzeti, kayitAnahtari, type EsAnahtari } from "../store/eslestir.js";
+import { evraklariEslestir, grupOzeti, kayitAnahtari, sorunAnahtari, type EsAnahtari } from "../store/eslestir.js";
 import { esitlemeKimligiSec, esitlemeSayaci, type SonEsitleme } from "../store/esitleme.js";
 import { dirname, extname, join } from "node:path";
 import { createHash } from "node:crypto";
@@ -750,7 +750,7 @@ export class Orkestrator {
         if (err instanceof Hata && err.code === KODLAR.OTURUM_BITTI) throw err;
         const mesaj = err instanceof Error ? err.message : String(err);
         this.sec.olaylar.bas("evrak:indirme-hatasi", { evrakId: satir.evrakId, tur: satir.tur, hata: mesaj });
-        this.sorunEkle(klasor, satir, "indirme", mesaj);
+        this.sorunEkle(klasor, satir, "indirme", mesaj, ana);
         satirlar.push({ yol: rel, durum: "indirilemedi", aciklama: `Belge indirilemedi: ${mesaj}` });
         is.ilerleme.biten++;
         ilerlemeyiKaydet();
@@ -758,7 +758,7 @@ export class Orkestrator {
       }
       if (yanit.durum >= 400) {
         this.sec.olaylar.bas("evrak:indirme-hatasi", { evrakId: satir.evrakId, durum: yanit.durum, tur: satir.tur });
-        this.sorunEkle(klasor, satir, "indirme", `portal ${yanit.durum} döndü`);
+        this.sorunEkle(klasor, satir, "indirme", `portal ${yanit.durum} döndü`, ana);
         satirlar.push({ yol: rel, durum: "indirilemedi", aciklama: `Portal ${yanit.durum} döndü; belge inmedi.` });
         is.ilerleme.biten++;
         ilerlemeyiKaydet();
@@ -767,7 +767,7 @@ export class Orkestrator {
       if (evrakYuklenmemisMi(yanit.baytlar, yanit.basliklar["content-type"] ?? "")) {
         const mesaj = yuklenmemisMesaji(yanit.baytlar) || "Evrak UYAP sistemine yüklenmemiş";
         this.sec.olaylar.bas("evrak:yuklenmemis", { evrakId: satir.evrakId, tur: satir.tur, mesaj });
-        this.sorunEkle(klasor, satir, "yuklenmemis", mesaj);
+        this.sorunEkle(klasor, satir, "yuklenmemis", mesaj, ana);
         satirlar.push({ yol: rel, durum: "yuklenmemis", aciklama: `${mesaj}; onarılacak bir belge yok.` });
         is.ilerleme.biten++;
         ilerlemeyiKaydet();
@@ -806,7 +806,7 @@ export class Orkestrator {
       if (yer >= 0) manifest.evraklar[yer] = yeniKayit;
       else manifest.evraklar.push(yeniKayit);
       manifestDepo.yaz(manifest);
-      this.sorunCozuldu(caseKey, satir.evrakId, "indirme");
+      this.sorunCozuldu(caseKey, satir.evrakId, "indirme", satirAnahtari(satir, ana));
       // Kaynak yenilendi: eski metin artık bu belgeyi anlatmıyor.
       const donusum = this.donusumUygula(caseKey, klasor, yeniKayit);
       manifestDepo.yaz(manifest);
@@ -1076,7 +1076,7 @@ export class Orkestrator {
           // Evrak yerinde ve baytları doğrulandı: bu evrağa ait AÇIK indirme
           // kaydı artık gerçeği anlatmıyor. Portale istek gitmemiş olması
           // önemli değil — kayıt "evrak inmedi" der, evrak inmiş durumda.
-          this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme");
+          this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme", satirAnahtari(e, anaEvrak));
           return { kayit, yeniIndirildi: false, onceki };
         }
       }
@@ -1100,12 +1100,12 @@ export class Orkestrator {
         tur: e.tur,
         hata: err instanceof Error ? err.message : String(err),
       });
-      this.sorunEkle(klasor, e, "indirme", err instanceof Error ? err.message : String(err));
+      this.sorunEkle(klasor, e, "indirme", err instanceof Error ? err.message : String(err), anaEvrak);
       return null;
     }
     if (yanit.durum >= 400) {
       this.sec.olaylar.bas("evrak:indirme-hatasi", { evrakId: e.evrakId, durum: yanit.durum, tur: e.tur });
-      this.sorunEkle(klasor, e, "indirme", `portal ${yanit.durum} döndü`);
+      this.sorunEkle(klasor, e, "indirme", `portal ${yanit.durum} döndü`, anaEvrak);
       return null;
     }
     // 3) SESSİZ BOZULMA: text/plain asla belge değildir (doğrulanmış davranış)
@@ -1116,7 +1116,7 @@ export class Orkestrator {
         tur: e.tur,
         mesaj: yuklenmemisMesaji(yanit.baytlar),
       });
-      this.sorunEkle(klasor, e, "yuklenmemis", yuklenmemisMesaji(yanit.baytlar) || "Evrak UYAP sistemine yüklenmemiş");
+      this.sorunEkle(klasor, e, "yuklenmemis", yuklenmemisMesaji(yanit.baytlar) || "Evrak UYAP sistemine yüklenmemiş", anaEvrak);
       return null;
     }
     // 4) Uzantı: content-type'tan türet (evrak adından DEĞİL); belirsizse UDF kokla
@@ -1161,7 +1161,7 @@ export class Orkestrator {
     mkdirSync(dirname(hedef), { recursive: true });
     yazMetinAtomik(hedef, yanit.baytlar);
     // Önceki denemede düşen evrak bu turda indi: kaydı kapat.
-    this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme");
+    this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme", satirAnahtari(e, anaEvrak));
     const kayit = manifestKaydiYap(e, klasor, hedef, yanit.baytlar, kat, anaEvrak, false);
     // P20 (inceleme) — YEDEK KOPYA İŞARETİ. Yalnız belirsiz grupta, yalnız
     // içerik TANINMAMIŞKEN anlamlıdır: tanınan içerik zaten bir belgenin
@@ -1233,14 +1233,21 @@ export class Orkestrator {
         kayit.mdPath = tanidik.mdPath;
       }
     }
-    this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme");
+    this.sorunCozuldu(this.klasorCaseKey.get(klasor) ?? klasor, e.evrakId, "indirme", satirAnahtari(e, anaEvrak));
     return { kayit, yeniIndirildi: false, onceki: tanidik };
   }
 
-  private sorunEkle(klasor: string, e: EvrakSatiri, tur: "indirme" | "donusum" | "yuklenmemis", hata: string): void {
+  private sorunEkle(
+    klasor: string,
+    e: EvrakSatiri,
+    tur: "indirme" | "donusum" | "yuklenmemis",
+    hata: string,
+    anaEvrak: EvrakSatiri | undefined,
+  ): void {
     this.sec.sorunlar.ekle({
       caseKey: this.klasorCaseKey.get(klasor) ?? klasor,
       evrakId: e.evrakId,
+      anahtar: satirAnahtari(e, anaEvrak),
       tur,
       hata,
     });
@@ -1258,8 +1265,13 @@ export class Orkestrator {
    * sayaca "brew install poppler ile düzelir" diye alınıyor; kurulum sonrası
    * kayıt kendiliğinden kapanmazsa o gerekçe boşa çıkar.
    */
-  private sorunCozuldu(caseKey: string, evrakId: string, tur: "indirme" | "donusum" | "yuklenmemis"): void {
-    const s = this.sec.sorunlar.acikBul(caseKey, evrakId, tur);
+  private sorunCozuldu(
+    caseKey: string,
+    evrakId: string,
+    tur: "indirme" | "donusum" | "yuklenmemis",
+    anahtar: string | undefined,
+  ): void {
+    const s = this.sec.sorunlar.acikBul(caseKey, evrakId, tur, anahtar);
     if (s !== undefined) this.sec.sorunlar.cozuldu(s.sorunId);
   }
 
@@ -1303,6 +1315,7 @@ export class Orkestrator {
       this.sec.sorunlar.ekle({
         caseKey,
         evrakId: e.evrakId,
+        anahtar: sorunAnahtari(kayitAnahtari(e)),
         tur: "donusum",
         hata: son.mdHata ?? `mdStatus=${son.mdStatus}`,
       });
@@ -1313,7 +1326,7 @@ export class Orkestrator {
       // eder. Kimlik `ekle` ile birebir aynı (caseKey + evrakId).
       // `gorsel`/`desteklenmiyor` KAPATMAZ: onlar dönüşümün başarısı değil,
       // belgenin sınıfıdır ve zaten hiç sorun kaydı üretmezler.
-      this.sorunCozuldu(caseKey, e.evrakId, "donusum");
+      this.sorunCozuldu(caseKey, e.evrakId, "donusum", sorunAnahtari(kayitAnahtari(e)));
     }
     return son;
   }
@@ -1458,6 +1471,15 @@ function oncekiEvrakBul(kayitlar: ManifestEvrak[], e: EvrakSatiri, ana: EvrakSat
 function tipi(e: EvrakSatiri): string | undefined {
   const v = e.ham["tip"] ?? e.ham["evrakTipi"];
   return typeof v === "string" ? v : undefined;
+}
+
+/**
+ * Portal satırının sorun anahtarı (`sorunAnahtari`, src/store/eslestir.ts).
+ * Ek evrakta ana satır gerekir: grup ananın `stableKey`inden kurulur.
+ * Manifest kaydı tarafı `sorunAnahtari(kayitAnahtari(k))` ile AYNI dizeyi verir.
+ */
+function satirAnahtari(e: EvrakSatiri, anaEvrak: EvrakSatiri | undefined): string | undefined {
+  return sorunAnahtari(portalAnahtari(e, anaEvrak === undefined ? [] : [anaEvrak]));
 }
 
 function ekEvrakMi(e: EvrakSatiri): boolean {

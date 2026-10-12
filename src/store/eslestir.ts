@@ -271,3 +271,18 @@ function ekSirasi(k: ManifestEvrak): number | null {
   const n = Number(k.stableKey.slice(i + 1));
   return Number.isFinite(n) ? n : null;
 }
+
+/**
+ * Sorun kaydının KARARLI kimliği (src/jobs/problems.ts `Sorun.anahtar`).
+ *
+ * Portal `evrakId`yi her liste yanıtında yeniden ürettiği için (P19) sorun
+ * kaydı evrakId ile tutulursa düzelen sorun sonraki turda bulunamaz. Burada
+ * eşleştirmenin zaten kullandığı grup kimliği alınır; portal satırından
+ * (`portalAnahtari`) ve manifest kaydından (`kayitAnahtari`) aynı belge için
+ * AYNI dize çıkar. İkincil ölçüt (gönderen + tip) eklenir: aynı gruba düşen
+ * iki farklı belgenin sorunu birbirine karışmasın. Grup ölçülemiyorsa
+ * (numarasız evrak) `undefined`: çağıran `evrakId`ye düşer.
+ */
+export function sorunAnahtari(a: EsAnahtari): string | undefined {
+  return a.grup === null ? undefined : `${a.grup}\u0000${a.ikincil}`;
+}

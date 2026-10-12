@@ -7,11 +7,43 @@ import { yazJsonAtomik } from "../store/fsops.js";
 export interface Sorun {
   sorunId: string;
   caseKey: string;
+  /** Kaydı açan turda portalın verdiği kimlik. KALICI DEĞİLDİR (P19: portal
+   *  `evrakId`yi her liste yanıtında yeniden üretir); yalnız bilgi ve
+   *  `anahtar`ı olmayan eski kayıtlar için eşleşme yedeği. */
   evrakId?: string;
+  /**
+   * Evrağın KARARLI kimliği: P19 eşleştirmesinin grubu + ikincil ölçüt
+   * (`sorunAnahtari`, src/store/eslestir.ts). Ana evrakta birim evrak no + tür +
+   * tarih, ek evrakta ananın `stableKey`i + sıra + tür + tarih; ikisinde de
+   * gönderen + tip. Numarasız evrakta ölçülemez → yok, `evrakId`ye düşülür.
+   *
+   * Bu alan yokken kayıt `caseKey + evrakId` ile eşleniyordu: sonraki turda
+   * aynı belge başka kimlikle döndüğü için düzelen sorun hiç kapanmıyor,
+   * sayaç sonsuza kadar yanıyordu (12 Eki 2026 gerçek arşivde 88 kayıt).
+   */
+  anahtar?: string;
   tur: "indirme" | "donusum" | "yuklenmemis";
   hata: string;
   at: string;
   durum: "acik" | "yok-sayildi" | "cozuldu";
+}
+
+/**
+ * Bir kaydın verilen evrakla AYNI SORUN olup olmadığı — `ekle` ve `acikBul`in
+ * TEK eşleşme ölçütü (kaydı açan ve kapatan iki yol aynı kimliği görsün diye).
+ * İki tarafta da `anahtar` varsa yalnız o konuşur; biri yoksa (eski kayıt ya
+ * da numarasız evrak) eski `evrakId` ölçütü geçerli kalır.
+ */
+function ayniSorun(
+  s: Sorun,
+  caseKey: string,
+  evrakId: string | undefined,
+  anahtar: string | undefined,
+  tur: Sorun["tur"]
+): boolean {
+  if (s.caseKey !== caseKey || s.tur !== tur) return false;
+  if (s.anahtar !== undefined && anahtar !== undefined) return s.anahtar === anahtar;
+  return s.evrakId === evrakId;
 }
 
 /**
@@ -83,17 +115,16 @@ export class SorunDepo {
 
   ekle(yeni: Omit<Sorun, "sorunId" | "at" | "durum">): Sorun {
     const v = this.oku();
-    // aynı caseKey+evrakId+tür zaten açık: güncelle (yığılma yok)
+    // aynı sorun zaten açık: güncelle (yığılma yok). Kimlik `ayniSorun`.
     const mevcut = v.sorunlar.find(
-      (s) =>
-        s.durum === "acik" &&
-        s.caseKey === yeni.caseKey &&
-        s.evrakId === yeni.evrakId &&
-        s.tur === yeni.tur
+      (s) => s.durum === "acik" && ayniSorun(s, yeni.caseKey, yeni.evrakId, yeni.anahtar, yeni.tur)
     );
     if (mevcut) {
       mevcut.hata = yeni.hata;
       mevcut.at = new Date().toISOString();
+      // Bu turun kimliği taşınır; anahtarsız eski kayıt anahtar kazanır.
+      mevcut.evrakId = yeni.evrakId;
+      if (yeni.anahtar !== undefined) mevcut.anahtar = yeni.anahtar;
       this.yaz();
       return mevcut;
     }
@@ -115,20 +146,18 @@ export class SorunDepo {
 
   /**
    * Aynı kimlikteki (dava + evrak + tür) AÇIK kayıt. `ekle`in eşleştirme
-   * ölçütünün AYNISIDIR — kaydı açan ve kapatan iki yol aynı kimliği görsün
-   * diye tek yerde durur. Yoksayılan ya da çözülmüş kayıt DÖNMEZ.
+   * ölçütünün AYNISIDIR (`ayniSorun`) — kaydı açan ve kapatan iki yol aynı
+   * kimliği görsün diye tek yerde durur. Yoksayılan ya da çözülmüş kayıt DÖNMEZ.
+   * `anahtar` verilmezse yalnız `evrakId` konuşur (eski çağıranlar).
    */
   acikBul(
     caseKey: string,
     evrakId: string | undefined,
-    tur: Sorun["tur"]
+    tur: Sorun["tur"],
+    anahtar?: string
   ): Sorun | undefined {
     return this.oku().sorunlar.find(
-      (s) =>
-        s.durum === "acik" &&
-        s.caseKey === caseKey &&
-        s.evrakId === evrakId &&
-        s.tur === tur
+      (s) => s.durum === "acik" && ayniSorun(s, caseKey, evrakId, anahtar, tur)
     );
   }
 

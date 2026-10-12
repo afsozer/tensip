@@ -631,8 +631,8 @@ export function daemonKur(sec: DaemonSecenek = {}): Daemon {
         ...metniYenidenUret(kok, kayit.klonYolu, yol, onay === true, {
           // YALNIZ gerçekten düzelen sorun kapanır ve kullanıcının YOKSAYDIĞI
           // kayıt geri açılmaz: `acikBul` yalnız açık kayıt döndürür.
-          duzeldi: (evrakId) => {
-            const s = sorunlar.acikBul(caseKey, evrakId, "donusum");
+          duzeldi: (evrakId, anahtar) => {
+            const s = sorunlar.acikBul(caseKey, evrakId, "donusum", anahtar);
             if (s !== undefined) sorunlar.cozuldu(s.sorunId);
           },
         }),

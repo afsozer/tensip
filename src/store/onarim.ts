@@ -37,7 +37,7 @@ import { statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { donustur } from "../convert/run.js";
 import { kapsamIcindeMi, kapsamKontrol, kaynakOlcer } from "./fsops.js";
-import { kayitAnahtari } from "./eslestir.js";
+import { kayitAnahtari, sorunAnahtari } from "./eslestir.js";
 import {
   MANIFEST_ADI,
   ManifestDepo,
@@ -316,7 +316,7 @@ export function metniYenidenUret(
    * girmez. Yalnız GERÇEKTEN düzelen satırda çağrılır — düzelmeyen bir işi
    * "çözüldü" saymak sayacı yalancı yapar.
    */
-  sec: { duzeldi?: (evrakId: string) => void } = {},
+  sec: { duzeldi?: (evrakId: string, anahtar: string | undefined) => void } = {},
 ): OnarimSatiri {
   kapsamKontrol(kok, klasor);
   const taban: OnarimSatiri = {
@@ -381,7 +381,8 @@ export function metniYenidenUret(
   // Kaynak DEĞİŞMEDİ mi? İddia değil ölçüm: dönüşümden SONRA yeniden bakılır.
   const sonrasi = kaynakDurumu(klasor, kayit);
   const duzeldi = son.mdStatus === "ok" && son.mdPath !== undefined;
-  if (duzeldi && typeof kayit.evrakId === "string") sec.duzeldi?.(kayit.evrakId);
+  // Kararlı anahtar da geçer: kaydı açan tur başka evrakId görmüş olabilir (P19).
+  if (duzeldi && typeof kayit.evrakId === "string") sec.duzeldi?.(kayit.evrakId, sorunAnahtari(kayitAnahtari(kayit)));
   return {
     ...taban,
     durum: duzeldi ? "onarildi" : "duzelmedi",
