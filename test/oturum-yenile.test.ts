@@ -14,7 +14,7 @@ import { MiniWsSunucu, tmpKok } from "./yardimci.js";
 const bekle = (ms: number): Promise<void> => new Promise((c) => setTimeout(c, ms));
 
 /** Sayan portal mock'u: her isteği sayar, ayarlanabilir yanıt döner. */
-async function portalKur(yanit: { durum: number; rc: string }): Promise<{
+async function portalKur(yanit: { durum: number; rc: string }, gecikmeMs = 0): Promise<{
   port: number;
   sayac: () => number;
   kapat: () => Promise<void>;
@@ -23,8 +23,12 @@ async function portalKur(yanit: { durum: number; rc: string }): Promise<{
   const s: Server = httpSunucu((istek, cevap) => {
     sayac += 1;
     istek.resume();
-    cevap.writeHead(yanit.durum, { "content-type": "application/json", "uyapfc_rc": yanit.rc });
-    cevap.end("{}");
+    const yaz = () => {
+      cevap.writeHead(yanit.durum, { "content-type": "application/json", "uyapfc_rc": yanit.rc });
+      cevap.end("{}");
+    };
+    if (gecikmeMs > 0) setTimeout(yaz, gecikmeMs);
+    else yaz();
   });
   const port = await new Promise<number>((c) =>
     s.listen(0, "127.0.0.1", () => c((s.address() as { port: number }).port))
@@ -59,6 +63,36 @@ describe("oturum canlı-tutma", () => {
     try {
       await bekle(1700); // 500 ms aralık → ~3 tick
       assert.ok(p.sayac() >= 2, `yenileyici oturumu canlı tutmalı (istek sayısı: ${p.sayac()})`);
+    } finally {
+      await d.kapat();
+      await p.kapat();
+      ayar.temizle();
+      kokK.temizle();
+    }
+  });
+
+  // 12 Eki 2026 gerçek arşivde ölçüldü: 10 dk aralıklı yenileyici 16,5 dk hiç
+  // yoklama atmadı, oturum düştü. Sebep: pencere = aralık iken yoklamanın kendi
+  // gecikmesi sonraki tetikte geçen süreyi pencerenin altına düşürüyor, her
+  // ikinci tetik atlanıyordu. Bu test o gecikmeyi üretir; eski kod 5 tetikte 3
+  // yoklama atar, düzeltilmiş kod her tetikte.
+  test("yoklama gecikmesi sonraki tetiği atlatmaz: her tetik yoklar", async () => {
+    const p = await portalKur({ durum: 200, rc: "SUCCESS" }, 40);
+    const ayar = tmpKok();
+    const kokK = tmpKok();
+    oturumYaz(ayar.kok);
+    const d = daemonKur({
+      ayarDir: ayar.kok,
+      kok: kokK.kok,
+      portalUrl: `http://127.0.0.1:${p.port}`,
+      istekAralikMs: 1,
+      oturumYenileMs: 300,
+      webPort: 0,
+    });
+    await d.rpc.baslat();
+    try {
+      await bekle(1700); // 300 ms aralık → 5 tetik (300, 600, 900, 1200, 1500)
+      assert.ok(p.sayac() >= 5, `her tetik yoklamalı; yoklama sayısı: ${p.sayac()} (eski davranış: 3)`);
     } finally {
       await d.kapat();
       await p.kapat();

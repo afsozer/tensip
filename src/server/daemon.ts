@@ -866,7 +866,13 @@ export function daemonKur(sec: DaemonSecenek = {}): Daemon {
     sonBilinenLoginAt = kayit.loginAt;
     oncekiTickDosyaVar = true;
     if (oturum.durumBilgisi().durum === "giris_gerekiyor") return;
-    await oturum.probeTaze(oturumYenileMs / 1000); // önbellek penceresi = aralık: tek kadran
+    // Önbellek penceresi aralığın YARISI. Eskiden aralığın kendisiydi: `sonProbeAt`
+    // yoklama BİTİNCE yazıldığı için sonraki tetikte geçen süre aralığın ağ
+    // gecikmesi kadar altında kalıyor (599,x sn < 600) ve yoklama atlanıyordu;
+    // etkin aralık iki katına çıkıyordu (12 Eki 2026 gerçek arşiv: 16,5 dk hiç
+    // yoklama yok, oturum 401). Yarım pencereyle her tetik yoklar; yalnız son
+    // yarım aralıkta başka aktör (pano) yoklamışsa atlar → en geç 1,5 aralık.
+    await oturum.probeTaze(oturumYenileMs / 2000);
     if (oturumDepo.oku() === null) {
       oncekiTickDosyaVar = false;
       const yasDk = sonBilinenLoginAt
