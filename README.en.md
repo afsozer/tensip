@@ -2,6 +2,8 @@
 
 # Tensip
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23603693.svg)](https://doi.org/10.5281/zenodo.23603693)
+
 **Project page:** [avfatihsozer.com/en/projects/tensip](https://avfatihsozer.com/en/projects/tensip) · Türkçe: [README.md](README.md)
 
 Tensip is an open-source helper app that downloads your case files from the UYAP Lawyer Portal (the lawyer portal of Türkiye's judicial information system) into a tidy archive on your own computer, keeps that archive in sync with the portal and shows the documents in a readable form on your desktop. The app's interface is in Turkish.

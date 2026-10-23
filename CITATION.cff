@@ -16,6 +16,7 @@ version: "1.1.1"
 date-released: "2026-10-23"
 license: AGPL-3.0-or-later
 repository-code: "https://github.com/afsozer/tensip"
+doi: "10.5281/zenodo.23603693"
 keywords:
   - uyap
   - legal-tech
