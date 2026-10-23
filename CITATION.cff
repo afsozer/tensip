@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "Bu yazılımı kullanırsanız lütfen aşağıdaki künyeyle atıf yapın. If you use this software, please cite it as below."
+type: software
+title: "Tensip"
+abstract: >-
+  Open source helper application that downloads a lawyer's case files from
+  the UYAP Lawyer Portal (Turkish judiciary) into an organised local archive,
+  keeps that archive in sync with the portal and shows the documents on the
+  desktop. It only queries the portal and downloads documents; it does not
+  file documents or sign anything. Tensip is not an official application and
+  has no connection to the Ministry of Justice, UYAP or any bar association.
+authors:
+  - family-names: "Sözer"
+    given-names: "Alpaslan Fatih"
+version: "1.1.1"
+date-released: "2026-10-23"
+license: AGPL-3.0-or-later
+repository-code: "https://github.com/afsozer/tensip"
+keywords:
+  - uyap
+  - legal-tech
+  - case-management
+  - document-archive
+  - udf
+  - turkish-law
+  - lawyers

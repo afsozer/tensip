@@ -1,6 +1,6 @@
 {
   "name": "tensip",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "UYAP Avukat Portalı'ndaki dava dosyalarını yerel arşive indiren, eşitleyen ve gösteren yardımcı uygulama (resmî değildir)",
   "license": "AGPL-3.0-or-later",
   "author": "Alpaslan Fatih Sözer",

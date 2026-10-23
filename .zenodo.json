@@ -1,0 +1,28 @@
+{
+  "title": "Tensip: local archive and sync tool for UYAP Lawyer Portal case files",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Sözer, Alpaslan Fatih"
+    }
+  ],
+  "description": "<p>Tensip is an open source helper application that downloads a lawyer's case files from the UYAP Lawyer Portal (the Turkish judiciary's e-justice system) into an organised local archive, keeps that archive in sync with the portal and shows the documents on the desktop. It lists the civil, criminal and enforcement files the lawyer represents, fetches only new or changed documents on later syncs, previews UDF and text-layer PDF documents, shows case history, parties and account information, lists upcoming hearings and exports them to macOS Calendar, and audits the archive for missing, broken or duplicate records. It has a macOS app window, a local browser dashboard and a command line with JSON output. Tensip only queries the portal and downloads documents; it does not file documents or petitions or sign anything, and the archive and session data stay on the user's computer. Tensip is not an official application: it has no connection to the Ministry of Justice, UYAP or any bar association.</p><p>Tensip, UYAP Avukat Portalı'ndaki dava dosyalarını avukatın kendi bilgisayarında düzenli bir arşive indiren, bu arşivi portalla eşitleyen ve evrakları masaüstünde okunur halde gösteren açık kaynaklı bir yardımcı uygulamadır. Portalda yalnız sorgu yapar ve belge indirir; evrak ya da dilekçe göndermez, imza atmaz. Tensip resmi bir uygulama değildir; Adalet Bakanlığı, UYAP ya da herhangi bir baro ile bağlantısı yoktur.</p>",
+  "license": "AGPL-3.0-or-later",
+  "keywords": [
+    "uyap",
+    "legal-tech",
+    "case-management",
+    "document-archive",
+    "udf",
+    "turkish-law",
+    "lawyers"
+  ],
+  "language": "eng",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/afsozer/tensip",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ]
+}
